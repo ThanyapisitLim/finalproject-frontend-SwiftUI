@@ -12,7 +12,6 @@ struct Home: View {
         VStack {
             Text("Welcome to Home Page")
         }
-        .navigationTitle("Home")
     }
 }
 
