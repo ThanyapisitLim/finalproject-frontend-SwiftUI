@@ -5,39 +5,50 @@
 //  Created by tagter on 29/10/2568 BE.
 //
 
-
 import SwiftUI
 
 struct MainLayout: View {
+    @State private var selectedTab: Int = 0
     var body: some View {
         NavigationStack {
-            TabView {
-                Home()
-                    .tabItem {
-                        Label("Vote", systemImage: "house")
-                    }
-
-                Poll()
-                    .tabItem {
-                        Label("Poll", systemImage: "paperplane")
-                    }
-                Profile()
-                    .tabItem {
-                        Label("Profilee", systemImage: "person.circle")
-                    }
-                //hello
+            ZStack {
+                TabView(selection: $selectedTab) {
+                    Home()
+                        .tabItem {
+                            Label("Home", systemImage: selectedTab == 0 ? "house.fill" : "house")
+                        }
+                        .tag(0)
+                    PollView()
+                        .tabItem {
+                            Label("Poll", systemImage: selectedTab == 1 ? "chart.bar.fill" : "chart.bar")
+                        }
+                        .tag(1)
+                    Profile()
+                        .tabItem {
+                            Label("Profile", systemImage: selectedTab == 2 ? "person.crop.circle.fill" : "person.crop.circle")
+                        }
+                        .tag(2)
+                }
+                .tint(Color.indigo)
             }
-            .navigationTitle(getTitle()) // ใช้ฟังก์ชันตั้งชื่อหน้าปัจจุบัน
-            
+            .navigationTitle(tabTitle)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         }
     }
 
-    // ฟังก์ชันเพื่อเปลี่ยนชื่อ navigation title ตามแท็บ
-    private func getTitle() -> String {
-        return "Main App"
+    private var tabTitle: String {
+        switch selectedTab {
+        case 0: return "Home"
+        case 1: return "My Polls"
+        case 2: return "Profile"
+        default: return ""
+        }
     }
 }
+
 
 #Preview {
     MainLayout()
 }
+

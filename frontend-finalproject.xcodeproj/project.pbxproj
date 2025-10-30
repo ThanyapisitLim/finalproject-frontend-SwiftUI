@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		E02FC41C2EB26D1D00F88DB0 /* frontend-finalproject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "frontend-finalproject.app"; path = "/Users/tagter/Desktop/coding/finalproject-frontend-SwiftUI/build/Debug-iphoneos/frontend-finalproject.app"; sourceTree = "<absolute>"; };
+		280F4DFE2EB3A5C100423625 /* frontend-finalproject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "frontend-finalproject.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -33,6 +33,7 @@
 			isa = PBXGroup;
 			children = (
 				2897F95F2EB26939001FD8E7 /* frontend-finalproject */,
+				280F4DFE2EB3A5C100423625 /* frontend-finalproject.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,7 +59,7 @@
 			packageProductDependencies = (
 			);
 			productName = "frontend-finalproject";
-			productReference = E02FC41C2EB26D1D00F88DB0 /* frontend-finalproject.app */;
+			productReference = 280F4DFE2EB3A5C100423625 /* frontend-finalproject.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

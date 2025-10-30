@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct LoadingView: View {
-    var title: String = "Loading…"
+    @State private var appear = false
 
     var body: some View {
         ZStack {
@@ -15,13 +15,16 @@ struct LoadingView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 16) {
-                ProgressView()
-                    .progressViewStyle(.circular)
-                    .scaleEffect(1.2)
-                Text(title)
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
+                Image(systemName: "person.fill.questionmark")
+                    .font(.system(size: 64, weight: .semibold))
+                    .foregroundColor(.indigo)
+                    .scaleEffect(appear ? 1.0 : 0.92)
+                    .opacity(appear ? 1 : 0)
+
             }
         }
     }
+}
+#Preview {
+    LoadingView()
 }

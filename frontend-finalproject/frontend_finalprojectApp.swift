@@ -9,10 +9,18 @@ import SwiftUI
 
 @main
 struct Frontend_finalprojectApp: App {
+    @State private var isLoading = true
+
     var body: some Scene {
         WindowGroup {
-            MainLayout() // หรือชื่อหน้าแรก
+            Group {
+                if isLoading {
+                    LoadingView()
+                } else {
+                    MainLayout()
+                        .transition(.opacity)
+                }
+            }
         }
     }
 }
-

@@ -7,60 +7,206 @@
 
 import SwiftUI
 
-struct PollPopupVote: View {
-    @Environment(\.dismiss) var dismiss
+struct VotePopup: View {
+    @Environment(\.dismiss) private var dismiss
     let poll: PollModel
+    let userId: String
     @State private var selectedOption: String? = nil
+    @State private var isSubmitting = false
+    @State private var errorMessage: String?
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text(poll.question)
-                .font(.title2)
-                .fontWeight(.semibold)
-                .multilineTextAlignment(.center)
-                .padding()
+        NavigationStack {
+            ZStack {
+                // Background blur for premium feel
+                Color.clear
+                    .background(.ultraThinMaterial)
+                    .ignoresSafeArea()
 
-            // Options เป็นปุ่ม
-            ForEach(poll.options, id: \.self) { option in
-                Button(action: {
-                    selectedOption = option
-                }) {
-                    HStack {
-                        Text(option)
-                            .foregroundColor(.primary)
-                        Spacer()
-                        if selectedOption == option {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.indigo)
-                        }
-                    }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(selectedOption == option ? Color.indigo : Color.gray.opacity(0.3), lineWidth: 1)
+                // Card container
+                VStack(spacing: 16) {
+                    HeaderView(question: poll.question)
+
+                    // Choices list
+                    OptionsListView(
+                        options: poll.options,
+                        selectedOption: $selectedOption
                     )
+
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+
+                    // Primary action
+                    Button {
+                        Task { await submitVote() }
+                    } label: {
+                        HStack {
+                            if isSubmitting {
+                                ProgressView()
+                            }
+                            Text("Vote")
+                                .fontWeight(.semibold)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background((selectedOption != nil && !isSubmitting) ? Color.indigo : Color.gray.opacity(0.5))
+                        .foregroundColor(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+                    .disabled(selectedOption == nil || isSubmitting)
+
+                    // Footer
+                    if let expireText = formattedExpireText() {
+                        Text(expireText)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
+                }
+                .padding(20)
+                .background(
+                    RoundedRectangle(cornerRadius: 18)
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 18)
+                                .stroke(Color.indigo.opacity(0.15), lineWidth: 1)
+                        )
+                        .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
+                )
+                .padding(.horizontal)
+            }
+            .navigationTitle("Vote")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
+        }
+        .presentationDetents([.large])
+    }
 
-            Button(action: {
-                // ส่งผลการโหวตไป API หรือทำอะไรก็ได้
-                print("Voted for:", selectedOption ?? "none")
-                dismiss()
-            }) {
+    private func formattedExpireText() -> String? {
+        // PollModel.expireAt is a String in ISO 8601 with fractional seconds (based on createPoll payload)
+        let iso: ISO8601DateFormatter = {
+            let f = ISO8601DateFormatter()
+            f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            return f
+        }()
+
+        guard let date = iso.date(from: poll.expireAt) else { return nil }
+
+        let formatter: DateFormatter = {
+            let f = DateFormatter()
+            f.dateStyle = .medium
+            f.timeStyle = .short
+            return f
+        }()
+
+        return "Ends \(formatter.string(from: date))"
+    }
+
+    private func submitVote() async {
+        guard let selectedOption else { return }
+        isSubmitting = true
+        errorMessage = nil
+        defer { isSubmitting = false }
+
+        do {
+            try await APIService.shared.vote(
+                userId: userId,
+                pollId: poll.id,
+                selectedOption: selectedOption
+            )
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+}
+
+
+private struct HeaderView: View {
+    let question: String
+
+    var body: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.indigo.opacity(0.12))
+                        .frame(width: 44, height: 44)
+                    Image(systemName: "chart.bar.fill")
+                        .foregroundColor(.indigo)
+                }
                 Text("Vote")
-                    .foregroundColor(.white)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(selectedOption != nil ? Color.indigo : Color.gray)
-                    .cornerRadius(14)
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                Spacer()
             }
-            .disabled(selectedOption == nil)
 
+            Text(question)
+                .font(.title2)
+                .fontWeight(.semibold)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.bottom, 4)
+    }
+}
+
+private struct OptionsListView: View {
+    let options: [String]
+    @Binding var selectedOption: String?
+
+    var body: some View {
+        VStack(spacing: 10) {
+            ForEach(options, id: \.self) { option in
+                OptionRow(
+                    title: option,
+                    isSelected: selectedOption == option
+                )
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    selectedOption = option
+                }
+            }
+        }
+    }
+}
+
+private struct OptionRow: View {
+    let title: String
+    let isSelected: Bool
+
+    var body: some View {
+        HStack {
+            Text(title)
+                .foregroundColor(.primary)
             Spacer()
+            Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                .foregroundColor(isSelected ? .indigo : .secondary)
         }
         .padding()
-        .presentationDetents([.medium, .large])
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.ultraThinMaterial)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(isSelected ? Color.indigo.opacity(0.5) : Color.indigo.opacity(0.15),
+                        lineWidth: isSelected ? 2 : 1)
+        )
+        .animation(.default, value: isSelected)
     }
 }
 
