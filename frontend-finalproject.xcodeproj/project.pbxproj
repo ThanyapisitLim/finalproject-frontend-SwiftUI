@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		2897F95D2EB26939001FD8E7 /* frontend-finalproject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "frontend-finalproject.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E02FC41C2EB26D1D00F88DB0 /* frontend-finalproject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "frontend-finalproject.app"; path = "/Users/tagter/Desktop/coding/finalproject-frontend-SwiftUI/build/Debug-iphoneos/frontend-finalproject.app"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -33,16 +33,7 @@
 			isa = PBXGroup;
 			children = (
 				2897F95F2EB26939001FD8E7 /* frontend-finalproject */,
-				2897F95E2EB26939001FD8E7 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		2897F95E2EB26939001FD8E7 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				2897F95D2EB26939001FD8E7 /* frontend-finalproject.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -67,7 +58,7 @@
 			packageProductDependencies = (
 			);
 			productName = "frontend-finalproject";
-			productReference = 2897F95D2EB26939001FD8E7 /* frontend-finalproject.app */;
+			productReference = E02FC41C2EB26D1D00F88DB0 /* frontend-finalproject.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -95,7 +86,7 @@
 			mainGroup = 2897F9542EB26939001FD8E7;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 2897F95E2EB26939001FD8E7 /* Products */;
+			productRefGroup = 2897F9542EB26939001FD8E7;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
