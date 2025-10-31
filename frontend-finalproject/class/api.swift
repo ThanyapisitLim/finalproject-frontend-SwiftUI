@@ -8,38 +8,57 @@
 import Foundation
 
 class APIService {
+    //Var
     static let shared = APIService()
+    let myurl = "http://localhost:8000"
     private init() {}
     
+    //Struct
     struct CreatePollRequest: Encodable {
         let userId: String
         let question: String
         let options: [String]
         let expireAt: String
     }
-    
     struct VoteRequest: Encodable {
         let userId: String
         let pollId: String
         let selectedOption: String
     }
 
+    //Method
+    //Fetch All Poll
     func fetchPolls() async throws -> [PollModel] {
-        guard let url = URL(string: "http://localhost:8000/get-polls") else { return [] }
+        guard let url = URL(string: "\(myurl)/get-polls") else { return [] }
         let (data, _) = try await URLSession.shared.data(from: url)
         let polls = try JSONDecoder().decode([PollModel].self, from: data)
         return polls
     }
     
+    //Fetch Vote By UserId
     func fetchVotesByUser(userId: String) async throws -> [PollModel] {
-        guard let url = URL(string: "http://localhost:8000/get-polls-by-user/\(userId)") else { return [] }
+        guard let url = URL(string: "\(myurl)/get-polls-by-user/\(userId)") else { return [] }
         let (data, _) = try await URLSession.shared.data(from: url)
         let polls = try JSONDecoder().decode([PollModel].self, from: data)
         return polls
     }
 
+    //Fetch Votes By PollId
+    func fetchVotesByPoll(pollId: String) async throws -> [VoteModel] {
+        guard let url = URL(string: "\(myurl)/get-votes-by-poll/\(pollId)") else { return [] }
+        let (data, _) = try await URLSession.shared.data(from: url)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        
+        // ถ้า decode ไม่ได้ หรือ array ว่าง → return []
+        return (try? decoder.decode([VoteModel].self, from: data)) ?? []
+    }
+
+
+    //Post Create Poll
     func createPoll(userId: String, question: String, options: [String], expireAt: Date) async throws -> PollModel {
-        guard let url = URL(string: "http://localhost:8000/create-poll") else {
+        guard let url = URL(string: "\(myurl)/create-poll") else {
             throw URLError(.badURL)
         }
 
@@ -71,8 +90,9 @@ class APIService {
         return created
     }
 
+    //Post Vote
     func vote(userId: String, pollId: String, selectedOption: String) async throws -> Void {
-        guard let url = URL(string: "http://localhost:8000/vote") else {
+        guard let url = URL(string: "\(myurl)/vote") else {
             throw URLError(.badURL)
         }
 
@@ -88,9 +108,5 @@ class APIService {
             let body = String(data: data, encoding: .utf8) ?? ""
             throw NSError(domain: "APIService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: "Vote failed (\(http.statusCode)): \(body)"])
         }
-
-        // If backend returns JSON you care about, decode here. For now we just treat 2xx as success.
-        _ = data
     }
 }
-

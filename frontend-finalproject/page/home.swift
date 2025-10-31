@@ -11,7 +11,6 @@ struct Home: View {
     @State private var polls: [PollModel] = []
     @State private var isLoading = true
     @State private var selectedPoll: PollModel? = nil // สำหรับ modal
-
     // Provide a userId here to use for voting (adjust as appropriate for your app)
     private let userId = "6901c4b2217d04ec4b17bb8a"
 
@@ -22,10 +21,8 @@ struct Home: View {
                     ForEach(polls) { poll in
                         MainCard(
                             imageName: "chart.bar.fill",
-                            pollId: poll.id,
-                            question: poll.question,
-                            options: poll.options,
-                            selectedPoll: $selectedPoll // ส่ง binding
+                            poll: poll,
+                            selectedPoll: $selectedPoll
                         )
                     }
                 }

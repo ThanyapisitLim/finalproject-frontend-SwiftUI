@@ -7,7 +7,9 @@
 
 import SwiftUI
 
+//Action Button
 struct FloatingActionButton: View {
+    //Var
     var action: () -> Void
     var size: CGFloat = 56
     var iconSize: CGFloat = 24
@@ -30,7 +32,9 @@ struct FloatingActionButton: View {
     }
 }
 
+//Position of Button
 struct CreatePollButton: View {
+    //Var
     var action: () -> Void
     var horizontalPadding: CGFloat = 24
     var verticalPadding: CGFloat = 32

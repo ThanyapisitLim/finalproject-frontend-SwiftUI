@@ -47,8 +47,6 @@ struct MainLayout: View {
     }
 }
 
-
 #Preview {
     MainLayout()
 }
-

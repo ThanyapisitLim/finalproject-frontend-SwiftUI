@@ -20,9 +20,7 @@ struct PollView: View {
                         ForEach(polls) { poll in
                             MainCard(
                                 imageName: "chart.bar.fill",
-                                pollId: poll.id,
-                                question: poll.question,
-                                options: poll.options,
+                                poll: poll,
                                 selectedPoll: $selectedPoll
                             )
                         }
@@ -42,27 +40,19 @@ struct PollView: View {
                     }
                     .padding(.top)
                 }
-
-                // Floating "+" button using reusable component
                 CreatePollButton {
                     showCreatePoll = true
                 }
             }
-            .navigationTitle("My Polls")
             .task {
                 await loadMyPolls()
             }
-            // Present vote popup when a card is tapped (optional; choose VotePopup or PollPopup)
             .sheet(item: $selectedPoll) { (poll: PollModel) in
                 PollPopup(poll: poll)
             }
-            // Present Create Poll form
             .sheet(isPresented: $showCreatePoll) {
                 CreatePollView(userId: userId) { created in
-                    // On success, prepend or refresh list
-                    // Option 1: Just insert locally
                     polls.insert(created, at: 0)
-                    // Option 2 (recommended): refresh from server
                     Task { await loadMyPolls() }
                 }
             }
@@ -79,3 +69,4 @@ struct PollView: View {
         isLoading = false
     }
 }
+

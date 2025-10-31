@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CreatePollView: View {
+    //Var
     let userId: String
     var onCreated: (PollModel) -> Void
 
@@ -22,11 +23,13 @@ struct CreatePollView: View {
     var body: some View {
         NavigationStack {
             Form {
+                //Question Section
                 Section(header: Text("Question")) {
                     TextField("Enter your question", text: $question)
                         .textInputAutocapitalization(.sentences)
                 }
-
+                
+                //Dynamic Choices
                 Section(header: Text("Choices")) {
                     ForEach(options.indices, id: \.self) { index in
                         HStack {
@@ -36,6 +39,7 @@ struct CreatePollView: View {
                             ))
                             .textInputAutocapitalization(.sentences)
 
+                            //Minus Button
                             if options.count > 2 {
                                 Button(role: .destructive) {
                                     options.remove(at: index)
@@ -47,14 +51,14 @@ struct CreatePollView: View {
                             }
                         }
                     }
-
                     Button {
                         options.append("")
                     } label: {
                         Label("Add Choice", systemImage: "plus.circle.fill")
                     }
                 }
-
+                
+                //Picker Date Section
                 Section(header: Text("End date and time")) {
                     DatePicker("Expires", selection: $expireDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                 }
@@ -88,6 +92,7 @@ struct CreatePollView: View {
         }
     }
 
+    //Check Valid
     private var isValid: Bool {
         let trimmedQuestion = question.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedOptions = options.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -98,6 +103,7 @@ struct CreatePollView: View {
         return !trimmedQuestion.isEmpty && nonEmptyOptions.count >= 2 && uniqueOptions.count == nonEmptyOptions.count && future
     }
 
+    //Submit to Post Create Poll
     private func submit() async {
         guard isValid else { return }
         isSubmitting = true
@@ -118,8 +124,4 @@ struct CreatePollView: View {
 
         isSubmitting = false
     }
-}
-
-#Preview {
-    CreatePollView(userId: "690228db03a3f45002921b9a") { _ in }
 }

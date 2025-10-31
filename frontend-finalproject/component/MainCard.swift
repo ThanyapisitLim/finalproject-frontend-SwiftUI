@@ -9,10 +9,8 @@ import SwiftUI
 
 struct MainCard: View {
     var imageName: String
-    var pollId: String
-    var question: String
-    var options: [String]
-    
+    var poll: PollModel
+
     // ใช้ PollModel สำหรับการเลือกแทน Poll (ซึ่งเป็น View)
     @Binding var selectedPoll: PollModel?
 
@@ -28,13 +26,13 @@ struct MainCard: View {
             }
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(question)
+                Text(poll.question)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
                     .lineLimit(2)
 
-                Text("\(options.count) options")
+                Text("\(poll.options.count) options")
                     .font(.subheadline)
                     .foregroundColor(.gray)
             }
@@ -54,14 +52,7 @@ struct MainCard: View {
         .padding(.horizontal)
         // 🖱️ Tap gesture เพื่อเลือก poll
         .onTapGesture {
-            selectedPoll = PollModel(
-                id: pollId,
-                creator: "",
-                question: question,
-                options: options,
-                createdAt: "",
-                expireAt: ""
-            )
+            selectedPoll = poll
         }
     }
 }

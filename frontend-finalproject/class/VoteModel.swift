@@ -10,7 +10,7 @@ struct VoteModel: Identifiable, Codable {
     let userId: String
     let pollId: String
     let selectedOption: String
-    let timestamp: String
+    let timestamp: Date
     let previousHash: String?
     let currentHash: String
 
