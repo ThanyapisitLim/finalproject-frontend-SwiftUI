@@ -9,8 +9,8 @@ import Foundation
 
 class APIService {
     //Var
-    static let shared = APIService()
     let myurl = "http://localhost:8000"
+    static let shared = APIService()
     private init() {}
     
     //Struct
@@ -35,8 +35,8 @@ class APIService {
         return polls
     }
     
-    //Fetch Vote By UserId
-    func fetchVotesByUser(userId: String) async throws -> [PollModel] {
+    //Fetch Polls By UserId
+    func fetchPollsByUser(userId: String) async throws -> [PollModel] {
         guard let url = URL(string: "\(myurl)/get-polls-by-user/\(userId)") else { return [] }
         let (data, _) = try await URLSession.shared.data(from: url)
         let polls = try JSONDecoder().decode([PollModel].self, from: data)
@@ -51,7 +51,6 @@ class APIService {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         
-        // ถ้า decode ไม่ได้ หรือ array ว่าง → return []
         return (try? decoder.decode([VoteModel].self, from: data)) ?? []
     }
 

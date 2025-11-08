@@ -96,7 +96,6 @@ struct VotePopup: View {
     }
 
     private func formattedExpireText() -> String? {
-        // PollModel.expireAt is a String in ISO 8601 with fractional seconds (based on createPoll payload)
         let iso: ISO8601DateFormatter = {
             let f = ISO8601DateFormatter()
             f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]

@@ -62,7 +62,7 @@ struct PollView: View {
     private func loadMyPolls() async {
         isLoading = true
         do {
-            polls = try await APIService.shared.fetchVotesByUser(userId: userId)
+            polls = try await APIService.shared.fetchPollsByUser(userId: userId)
         } catch {
             print("❌ Fetch error:", error)
         }
