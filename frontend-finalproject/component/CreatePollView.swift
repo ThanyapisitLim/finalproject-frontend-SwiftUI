@@ -10,7 +10,7 @@ import SwiftUI
 struct CreatePollView: View {
     //Var
     let userId: String
-    var onCreated: (PollModel) -> Void
+    var onCreated: (Poll.PollModel) -> Void
 
     @Environment(\.dismiss) private var dismiss
 
@@ -110,7 +110,7 @@ struct CreatePollView: View {
         errorMessage = nil
 
         do {
-            let created = try await APIService.shared.createPoll(
+            let created = try await Poll.shared.createPoll(
                 userId: userId,
                 question: question.trimmingCharacters(in: .whitespacesAndNewlines),
                 options: options.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) },

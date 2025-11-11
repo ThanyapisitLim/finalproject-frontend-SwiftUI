@@ -1,5 +1,5 @@
 //
-//  api.swift
+//  poll.swift
 //  frontend-finalproject
 //
 //  Created by Thanyapisit on 30/10/2568 BE.
@@ -7,25 +7,33 @@
 
 import Foundation
 
-class APIService {
-    //Var
+class Poll {
     let myurl = "http://localhost:8000"
-    static let shared = APIService()
+    static let shared = Poll()
     private init() {}
     
-    //Struct
+    //Poll Model (ใช้ตอน Fetch)
+    struct PollModel: Identifiable, Codable {
+        let id: String
+        let creator: String
+        let question: String
+        let options: [String]
+        let createdAt: String
+        let expireAt: String
+        
+        enum CodingKeys: String, CodingKey {
+            case id = "_id"
+            case creator, question, options, createdAt, expireAt
+        }
+    }
+    //Create Poll (ใช้ตอนสร้าง)
     struct CreatePollRequest: Encodable {
         let userId: String
         let question: String
         let options: [String]
         let expireAt: String
     }
-    struct VoteRequest: Encodable {
-        let userId: String
-        let pollId: String
-        let selectedOption: String
-    }
-
+    
     //Method
     //Fetch All Poll
     func fetchPolls() async throws -> [PollModel] {
@@ -42,18 +50,6 @@ class APIService {
         let polls = try JSONDecoder().decode([PollModel].self, from: data)
         return polls
     }
-
-    //Fetch Votes By PollId
-    func fetchVotesByPoll(pollId: String) async throws -> [VoteModel] {
-        guard let url = URL(string: "\(myurl)/get-votes-by-poll/\(pollId)") else { return [] }
-        let (data, _) = try await URLSession.shared.data(from: url)
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        
-        return (try? decoder.decode([VoteModel].self, from: data)) ?? []
-    }
-
 
     //Post Create Poll
     func createPoll(userId: String, question: String, options: [String], expireAt: Date) async throws -> PollModel {
@@ -88,24 +84,5 @@ class APIService {
         let created = try JSONDecoder().decode(PollModel.self, from: data)
         return created
     }
-
-    //Post Vote
-    func vote(userId: String, pollId: String, selectedOption: String) async throws -> Void {
-        guard let url = URL(string: "\(myurl)/vote") else {
-            throw URLError(.badURL)
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        let payload = VoteRequest(userId: userId, pollId: pollId, selectedOption: selectedOption)
-        request.httpBody = try JSONEncoder().encode(payload)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-        if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
-            let body = String(data: data, encoding: .utf8) ?? ""
-            throw NSError(domain: "APIService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: "Vote failed (\(http.statusCode)): \(body)"])
-        }
-    }
+    
 }

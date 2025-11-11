@@ -9,7 +9,7 @@ import SwiftUI
 
 struct VotePopup: View {
     @Environment(\.dismiss) private var dismiss
-    let poll: PollModel
+    let poll: Poll.PollModel
     let userId: String
     @State private var selectedOption: String? = nil
     @State private var isSubmitting = false
@@ -121,7 +121,7 @@ struct VotePopup: View {
         defer { isSubmitting = false }
 
         do {
-            try await APIService.shared.vote(
+            try await Vote.shared.vote(
                 userId: userId,
                 pollId: poll.id,
                 selectedOption: selectedOption

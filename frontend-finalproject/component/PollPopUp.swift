@@ -9,9 +9,9 @@ import SwiftUI
 
 struct PollPopup: View {
     @Environment(\.dismiss) private var dismiss
-    let poll: PollModel
-
-    @State private var votes: [VoteModel] = []
+    
+    let poll: Poll.PollModel
+    @State private var votes: [Vote.VoteModel] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
 
@@ -70,7 +70,6 @@ struct PollPopup: View {
     }
 
     //Date Helpers
-
     private static let isoFormatter: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
         f.formatOptions = [
@@ -108,7 +107,7 @@ struct PollPopup: View {
         isLoading = true
         errorMessage = nil
         do {
-            votes = try await APIService.shared.fetchVotesByPoll(pollId: poll.id)
+            votes = try await Vote.shared.fetchVotesByPoll(pollId: poll.id)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -128,7 +127,6 @@ struct PollPopup: View {
 }
 
 //Subviews
-
 private struct BackgroundView: View {
     var body: some View {
         Color.clear

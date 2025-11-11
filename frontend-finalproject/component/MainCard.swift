@@ -9,10 +9,10 @@ import SwiftUI
 
 struct MainCard: View {
     var imageName: String
-    var poll: PollModel
+    var poll: Poll.PollModel
 
     // ใช้ PollModel สำหรับการเลือกแทน Poll (ซึ่งเป็น View)
-    @Binding var selectedPoll: PollModel?
+    @Binding var selectedPoll: Poll.PollModel?
 
     var body: some View {
         HStack(spacing: 16) {

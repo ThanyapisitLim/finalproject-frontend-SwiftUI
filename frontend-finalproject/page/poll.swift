@@ -2,9 +2,9 @@ import SwiftUI
 
 struct PollView: View {
     let userId = "690228db03a3f45002921b9a"
-    @State private var polls: [PollModel] = []
+    @State private var polls: [Poll.PollModel] = []
     @State private var isLoading = true
-    @State private var selectedPoll: PollModel? = nil
+    @State private var selectedPoll: Poll.PollModel? = nil
     @State private var showCreatePoll = false
 
     var body: some View {
@@ -47,7 +47,7 @@ struct PollView: View {
             .task {
                 await loadMyPolls()
             }
-            .sheet(item: $selectedPoll) { (poll: PollModel) in
+            .sheet(item: $selectedPoll) { (poll: Poll.PollModel) in
                 PollPopup(poll: poll)
             }
             .sheet(isPresented: $showCreatePoll) {
@@ -62,7 +62,7 @@ struct PollView: View {
     private func loadMyPolls() async {
         isLoading = true
         do {
-            polls = try await APIService.shared.fetchPollsByUser(userId: userId)
+            polls = try await Poll.shared.fetchPollsByUser(userId: userId)
         } catch {
             print("❌ Fetch error:", error)
         }

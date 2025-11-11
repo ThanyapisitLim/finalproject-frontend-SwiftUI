@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct Home: View {
-    @State private var polls: [PollModel] = []
+    @State private var polls: [Poll.PollModel] = []
     @State private var isLoading = true
-    @State private var selectedPoll: PollModel? = nil // สำหรับ modal
+    @State private var selectedPoll: Poll.PollModel? = nil // สำหรับ modal
     // Provide a userId here to use for voting (adjust as appropriate for your app)
     private let userId = "6901c4b2217d04ec4b17bb8a"
 
@@ -32,7 +32,7 @@ struct Home: View {
             .task {
                 await loadPolls()
             }
-            .sheet(item: $selectedPoll) { (poll: PollModel) in
+            .sheet(item: $selectedPoll) { (poll: Poll.PollModel) in
                 VotePopup(poll: poll, userId: userId)
             }
         }
@@ -41,7 +41,7 @@ struct Home: View {
     private func loadPolls() async {
         isLoading = true
         do {
-            polls = try await APIService.shared.fetchPolls()
+            polls = try await Poll.shared.fetchPolls()
         } catch {
             print("❌ Fetch error:", error)
         }
