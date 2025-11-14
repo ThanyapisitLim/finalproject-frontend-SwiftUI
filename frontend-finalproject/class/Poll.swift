@@ -6,11 +6,14 @@
 //
 
 import Foundation
+import SwiftUI
+
 
 class Poll {
     let myurl = "http://localhost:8000"
     static let shared = Poll()
     private init() {}
+    
     
     //Poll Model (ใช้ตอน Fetch)
     struct PollModel: Identifiable, Codable {
@@ -46,8 +49,13 @@ class Poll {
     //Fetch Polls By UserId
     func fetchPollsByUser(userId: String) async throws -> [PollModel] {
         guard let url = URL(string: "\(myurl)/get-polls-by-user/\(userId)") else { return [] }
+        
         let (data, _) = try await URLSession.shared.data(from: url)
         let polls = try JSONDecoder().decode([PollModel].self, from: data)
+        
+        // ⭐ Save to cache
+        savePollsToCache(polls)
+        
         return polls
     }
 
@@ -84,5 +92,25 @@ class Poll {
         let created = try JSONDecoder().decode(PollModel.self, from: data)
         return created
     }
+    
+    // MARK: - CACHE
+    private let pollCacheKey = "cached_polls"
+
+    func savePollsToCache(_ polls: [PollModel]) {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(polls) {
+            UserDefaults.standard.set(encoded, forKey: pollCacheKey)
+        }
+    }
+
+    func loadPollsFromCache() -> [PollModel] {
+        if let data = UserDefaults.standard.data(forKey: pollCacheKey) {
+            if let decoded = try? JSONDecoder().decode([PollModel].self, from: data) {
+                return decoded
+            }
+        }
+        return []
+    }
+
     
 }

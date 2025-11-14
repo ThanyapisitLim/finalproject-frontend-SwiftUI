@@ -6,6 +6,9 @@ struct PollView: View {
     @State private var isLoading = true
     @State private var selectedPoll: Poll.PollModel? = nil
     @State private var showCreatePoll = false
+    @State private var hasLoadedOnce = false
+    
+    
 
     var body: some View {
         NavigationStack {
@@ -45,7 +48,10 @@ struct PollView: View {
                 }
             }
             .task {
-                await loadMyPolls()
+                if !hasLoadedOnce {
+                    hasLoadedOnce = true
+                    await loadMyPolls()
+                }
             }
             .sheet(item: $selectedPoll) { (poll: Poll.PollModel) in
                 PollPopup(poll: poll)
@@ -60,12 +66,22 @@ struct PollView: View {
     }
 
     private func loadMyPolls() async {
+        // 1) โหลด Cache ก่อน → แสดงทันที ไม่ต้องรอ API
+        let cached = Poll.shared.loadPollsFromCache()
+        if !cached.isEmpty {
+            polls = cached
+        }
+
         isLoading = true
+
+        // 2) โหลดข้อมูลจริงจาก server
         do {
-            polls = try await Poll.shared.fetchPollsByUser(userId: userId)
+            let freshPolls = try await Poll.shared.fetchPollsByUser(userId: userId)
+            polls = freshPolls // อัปเดต UI
         } catch {
             print("❌ Fetch error:", error)
         }
+
         isLoading = false
     }
 }

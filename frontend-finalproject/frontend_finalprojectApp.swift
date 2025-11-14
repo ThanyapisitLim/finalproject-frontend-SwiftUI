@@ -9,18 +9,19 @@ import SwiftUI
 
 @main
 struct Frontend_finalprojectApp: App {
-    @State private var isLoading = true
+    @StateObject var authVM = AuthViewModel()
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if isLoading {
-                    LoadingView()
-                } else {
-                    MainLayout()
-                        .transition(.opacity)
+            ContentView()
+                .environmentObject(authVM)
+                .onAppear {
+                    authVM.checkLoginStatus()   // ⭐ โหลดค่า login ตอนเปิดแอป
                 }
-            }
         }
     }
 }
+
+
+
+
