@@ -29,6 +29,11 @@ class User {
         let username: String
         let password: String
     }
+    
+    struct CreateUserResponse: Codable {
+        let userId: String
+    }
+
     //ใช้ Login
     struct LoginResponse: Codable {
         let message: String
@@ -48,23 +53,39 @@ class User {
     }
     
     //Create User
-    func createUser(username: String, password: String) async throws -> UserModel? {
-        guard let url = URL(string: "\(myurl)/create-user") else { return nil }
+    func createUser(username: String, password: String) async throws -> UserModel {
+        guard let url = URL(string: "\(myurl)/create-user") else {
+            throw URLError(.badURL)
+        }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         let body = ["username": username, "password": password]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
-        let (data, _) = try await URLSession.shared.data(for: request)
-        
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        if let httpResponse = response as? HTTPURLResponse {
+            switch httpResponse.statusCode {
+            case 201:
+                break // OK
+            case 409:
+                throw NSError(domain: "", code: 409, userInfo: [NSLocalizedDescriptionKey: "Username already exists"])
+            default:
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Server error"])
+            }
+        }
+
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        let resp = try decoder.decode(CreateUserResponse.self, from: data)
 
-        return try? decoder.decode(UserModel.self, from: data)
+        // map response → UserModel
+        return UserModel(id: resp.userId, username: username, password: password)
     }
+
+
     
     func loginUser(username: String, password: String) async throws -> UserModel? {
         guard let url = URL(string: "\(myurl)/login") else { return nil }

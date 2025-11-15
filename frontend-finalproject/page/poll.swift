@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PollView: View {
-    let userId = "690228db03a3f45002921b9a"
+    @AppStorage("cachedUserId") private var userId: String = ""
     @State private var polls: [Poll.PollModel] = []
     @State private var isLoading = true
     @State private var selectedPoll: Poll.PollModel? = nil

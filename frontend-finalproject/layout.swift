@@ -1,17 +1,12 @@
-//
-//  MainLayout.swift
-//  Frontend-finalProject
-//
-//  Created by tagter on 29/10/2568 BE.
-//
-
 import SwiftUI
 
 struct MainLayout: View {
     @State private var selectedTab: Int = 0
+    
     var body: some View {
         NavigationStack {
             ZStack {
+                Color(UIColor.systemGroupedBackground).ignoresSafeArea() // background เดียวกับ Login/Register
                 TabView(selection: $selectedTab) {
                     Home()
                         .tabItem {
@@ -29,12 +24,14 @@ struct MainLayout: View {
                         }
                         .tag(2)
                 }
-                .tint(Color.indigo)
+                .tint(.indigo) // ปุ่ม / tab สีเดียวกับ Login/Register
             }
             .navigationTitle(tabTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
         }
+        .tint(.indigo) // main tint ทั้ง navigationStack
     }
 
     private var tabTitle: String {

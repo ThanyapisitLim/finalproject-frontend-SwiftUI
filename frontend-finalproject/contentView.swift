@@ -1,10 +1,3 @@
-//
-//  contentView.swift
-//  frontend-finalproject
-//
-//  Created by tagter on 12/11/2568 BE.
-//
-
 import SwiftUI
 
 struct ContentView: View {
@@ -20,5 +13,7 @@ struct ContentView: View {
                     .environmentObject(authVM)
             }
         }
+        .tint(.indigo) // ใช้สีเดียวกับ Login/Register
+        .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
     }
 }

@@ -11,8 +11,7 @@ struct Home: View {
     @State private var polls: [Poll.PollModel] = []
     @State private var isLoading = true
     @State private var selectedPoll: Poll.PollModel? = nil // สำหรับ modal
-    // Provide a userId here to use for voting (adjust as appropriate for your app)
-    private let userId = "6901c4b2217d04ec4b17bb8a"
+    @AppStorage("cachedUserId") private var userId: String = ""
 
     var body: some View {
         NavigationStack {
