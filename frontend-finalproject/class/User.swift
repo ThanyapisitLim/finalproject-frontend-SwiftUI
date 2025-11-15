@@ -8,6 +8,7 @@
 import Foundation
 
 class User {
+
     let myurl = "http://localhost:8000"
     static let shared = User()
     private init() {}
@@ -81,8 +82,10 @@ class User {
         let decoder = JSONDecoder()
         let resp = try decoder.decode(CreateUserResponse.self, from: data)
 
-        // map response → UserModel
-        return UserModel(id: resp.userId, username: username, password: password)
+        // map response → UserModel and cache
+        let created = UserModel(id: resp.userId, username: username, password: password)
+        saveCurrentUser(created)
+        return created
     }
 
 
@@ -118,6 +121,7 @@ class User {
 
             // Map userId → UserModel
             let user = UserModel(id: loginResp.userId, username: username, password: password)
+            saveCurrentUser(user)
             return user
 
         } catch {
@@ -129,5 +133,34 @@ class User {
             }
             return nil
         }
+        
     }
+    
+    private let currentUserKey = "User.current"
+
+    // MARK: - Cache Helpers
+    private func saveCurrentUser(_ user: UserModel) {
+        do {
+            let data = try JSONEncoder().encode(user)
+            UserDefaults.standard.set(data, forKey: currentUserKey)
+        } catch {
+            print("Failed to encode user for caching:", error)
+        }
+    }
+
+    func currentUser() -> UserModel? {
+        guard let data = UserDefaults.standard.data(forKey: currentUserKey) else { return nil }
+        do {
+            return try JSONDecoder().decode(UserModel.self, from: data)
+        } catch {
+            print("Failed to decode cached user:", error)
+            return nil
+        }
+    }
+
+    func currentUsername() -> String? {
+        return currentUser()?.username
+    }
+
 }
+

@@ -11,6 +11,7 @@ struct Home: View {
     @State private var polls: [Poll.PollModel] = []
     @State private var isLoading = true
     @State private var selectedPoll: Poll.PollModel? = nil // สำหรับ modal
+    @State private var hasLoadedOnce = false
     @AppStorage("cachedUserId") private var userId: String = ""
 
     var body: some View {
@@ -29,7 +30,10 @@ struct Home: View {
             }
             .navigationTitle("Polls")
             .task {
-                await loadPolls()
+                if !hasLoadedOnce {
+                    hasLoadedOnce = true
+                    await loadMyPolls()
+                }
             }
             .sheet(item: $selectedPoll) { (poll: Poll.PollModel) in
                 VotePopup(poll: poll, userId: userId)
@@ -37,13 +41,23 @@ struct Home: View {
         }
     }
 
-    private func loadPolls() async {
+    private func loadMyPolls() async {
+        // 1) โหลด Cache ก่อน → แสดงทันที ไม่ต้องรอ API
+        let cached = Poll.shared.loadHomePollsFromCache()
+        if !cached.isEmpty {
+            polls = cached
+        }
+
         isLoading = true
+
+        // 2) โหลดข้อมูลจริงจาก server
         do {
-            polls = try await Poll.shared.fetchPolls()
+            let freshPolls = try await Poll.shared.fetchPolls()
+            polls = freshPolls // อัปเดต UI
         } catch {
             print("❌ Fetch error:", error)
         }
+
         isLoading = false
     }
 }

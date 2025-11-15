@@ -43,6 +43,8 @@ class Poll {
         guard let url = URL(string: "\(myurl)/get-polls") else { return [] }
         let (data, _) = try await URLSession.shared.data(from: url)
         let polls = try JSONDecoder().decode([PollModel].self, from: data)
+        saveHomePollsToCache(polls)
+        
         return polls
     }
     
@@ -95,6 +97,7 @@ class Poll {
     
     // MARK: - CACHE
     private let pollCacheKey = "cached_polls"
+    private let homePollCacheKey = "cached_home_polls"
 
     func savePollsToCache(_ polls: [PollModel]) {
         let encoder = JSONEncoder()
@@ -111,6 +114,20 @@ class Poll {
         }
         return []
     }
-
     
+    func saveHomePollsToCache(_ polls: [PollModel]) {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(polls) {
+            UserDefaults.standard.set(encoded, forKey: homePollCacheKey)
+        }
+    }
+
+    func loadHomePollsFromCache() -> [PollModel] {
+        if let data = UserDefaults.standard.data(forKey: homePollCacheKey) {
+            if let decoded = try? JSONDecoder().decode([PollModel].self, from: data) {
+                return decoded
+            }
+        }
+        return []
+    }
 }
