@@ -14,13 +14,15 @@ struct PollPopup: View {
     @State private var votes: [Vote.VoteModel] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
+    @State private var isDeleting = false
+    @State private var showConfirmDelete = false
 
     var body: some View {
         NavigationStack {
             ZStack {
                 BackgroundView()
 
-                CardContainer {
+                CardContainer(isDeleting: $isDeleting, showConfirmDelete: $showConfirmDelete, deleteAction: { await delete() }) {
                     SummaryHeaderView(
                         imageName: "chart.bar.fill",
                         question: poll.question,
@@ -49,6 +51,8 @@ struct PollPopup: View {
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
                 }
+                
+                .disabled(isDeleting)
             }
             .navigationTitle("Poll")
             .navigationBarTitleDisplayMode(.inline)
@@ -124,6 +128,17 @@ struct PollPopup: View {
         }
         return dict
     }
+    
+    private func delete() async {
+        isDeleting = true
+        do {
+            _ = try await Poll.shared.deletePoll(pollId: poll.id)
+            await MainActor.run { dismiss() }
+        } catch {
+            print("ลบไม่สำเร็จ: \(error)")
+        }
+        isDeleting = false
+    }
 }
 
 //Subviews
@@ -136,11 +151,33 @@ private struct BackgroundView: View {
 }
 
 private struct CardContainer<Content: View>: View {
+    @Binding var isDeleting: Bool
+    @Binding var showConfirmDelete: Bool
+    let deleteAction: () async -> Void
     @ViewBuilder var content: Content
 
     var body: some View {
         VStack(spacing: 16) {
             content
+            Button {
+                showConfirmDelete = true
+            } label: {
+                Group {
+                    if isDeleting {
+                        ProgressView()
+                    } else {
+                        Image(systemName: "trash")
+                            .foregroundColor(.red)
+                    }
+                }
+                .padding(8)
+            }
+            .alert("ยืนยันการลบ?", isPresented: $showConfirmDelete) {
+                Button("ลบ", role: .destructive) {
+                    Task { await deleteAction() }
+                }
+                Button("ยกเลิก", role: .cancel) {}
+            }
         }
         .padding(20)
         .background(
@@ -232,4 +269,5 @@ private struct ResultsListView: View {
             }
         }
     }
+    
 }

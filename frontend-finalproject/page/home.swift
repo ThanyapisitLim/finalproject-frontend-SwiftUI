@@ -25,6 +25,16 @@ struct Home: View {
                             selectedPoll: $selectedPoll
                         )
                     }
+                    if !isLoading && polls.isEmpty {
+                        VStack(spacing: 8) {
+                            Image(systemName: "tray")
+                                .font(.system(size: 36))
+                                .foregroundColor(.secondary)
+                            Text("No polls yet")
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.top, 40)
+                    }
                 }
                 .padding(.top)
             }
@@ -32,16 +42,20 @@ struct Home: View {
             .task {
                 if !hasLoadedOnce {
                     hasLoadedOnce = true
-                    await loadMyPolls()
+                    await loadPolls()
                 }
             }
             .sheet(item: $selectedPoll) { (poll: Poll.PollModel) in
                 VotePopup(poll: poll, userId: userId)
             }
+            .refreshable{
+                await loadPolls()
+            }
+            
         }
     }
 
-    private func loadMyPolls() async {
+    private func loadPolls() async {
         // 1) โหลด Cache ก่อน → แสดงทันที ไม่ต้องรอ API
         let cached = Poll.shared.loadHomePollsFromCache()
         if !cached.isEmpty {

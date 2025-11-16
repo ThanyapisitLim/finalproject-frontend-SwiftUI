@@ -62,6 +62,9 @@ struct PollView: View {
                     Task { await loadMyPolls() }
                 }
             }
+            .refreshable {
+                await loadMyPolls()
+            }
         }
     }
 

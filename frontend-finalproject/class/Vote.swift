@@ -110,4 +110,5 @@ class Vote {
     func clearVotesCache(userId: String) {
         UserDefaults.standard.removeObject(forKey: cacheKey(for: userId))
     }
+    
 }

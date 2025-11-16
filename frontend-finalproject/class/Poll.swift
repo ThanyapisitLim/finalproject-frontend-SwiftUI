@@ -91,7 +91,18 @@ class Poll {
             throw NSError(domain: "APIService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: "Create poll failed (\(http.statusCode)): \(body)"])
         }
 
+        // Decode poll ที่สร้างสำเร็จ
         let created = try JSONDecoder().decode(PollModel.self, from: data)
+
+        // ⭐ เพิ่มเข้าค้า Cache ของหน้า MyPoll
+        var userCache = loadPollsFromCache()
+        userCache.insert(created, at: 0)
+        savePollsToCache(userCache)
+
+        // ⭐ เพิ่มเข้าค้า Cache ของหน้า Home
+        var homeCache = loadHomePollsFromCache()
+        homeCache.insert(created, at: 0)
+        saveHomePollsToCache(homeCache)
         return created
     }
     
@@ -129,5 +140,43 @@ class Poll {
             }
         }
         return []
+    }
+    
+    func deletePoll(pollId: String) async throws -> Bool {
+        guard let url = URL(string: "\(myurl)/delete-poll") else {
+            throw URLError(.badURL)
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        // ส่ง pollId ใน body
+        let body: [String: String] = ["pollId": pollId]
+        request.httpBody = try JSONEncoder().encode(body)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+            let bodyString = String(data: data, encoding: .utf8) ?? ""
+            throw NSError(
+                domain: "APIService",
+                code: http.statusCode,
+                userInfo: [
+                    NSLocalizedDescriptionKey: "Delete poll failed (\(http.statusCode)): \(bodyString)"
+                ]
+            )
+        }
+
+        // ลบออกจาก cache ด้วย
+        var cached = loadPollsFromCache()
+        cached.removeAll { $0.id == pollId }
+        savePollsToCache(cached)
+
+        var homeCached = loadHomePollsFromCache()
+        homeCached.removeAll { $0.id == pollId }
+        saveHomePollsToCache(homeCached)
+
+        return true
     }
 }
