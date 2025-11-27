@@ -120,6 +120,9 @@ struct Profile: View {
         .onChange(of: authVM.isLoggedIn) { _, _ in
             Task { await loadVotes(force: true) }
         }
+        .refreshable {
+            await loadVotes()
+        }
     }
 
     private var isLoggedIn: Bool {

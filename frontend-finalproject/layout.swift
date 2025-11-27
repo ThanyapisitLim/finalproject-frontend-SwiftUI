@@ -15,14 +15,19 @@ struct MainLayout: View {
                         .tag(0)
                     PollView()
                         .tabItem {
-                            Label("Poll", systemImage: selectedTab == 1 ? "chart.bar.fill" : "chart.bar")
+                            Label("My Poll", systemImage: selectedTab == 1 ? "chart.bar.fill" : "chart.bar")
                         }
                         .tag(1)
-                    Profile()
+                    Result()
                         .tabItem {
-                            Label("Profile", systemImage: selectedTab == 2 ? "person.crop.circle.fill" : "person.crop.circle")
+                            Label("Result", systemImage: selectedTab == 2 ? "person.crop.circle.fill" : "person.crop.circle")
                         }
                         .tag(2)
+                    Profile()
+                        .tabItem {
+                            Label("Profile", systemImage: selectedTab == 3 ? "person.crop.circle.fill" : "person.crop.circle")
+                        }
+                        .tag(3)
                 }
                 .tint(.indigo) // ปุ่ม / tab สีเดียวกับ Login/Register
             }

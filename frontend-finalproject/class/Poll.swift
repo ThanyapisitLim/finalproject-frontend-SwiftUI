@@ -60,6 +60,18 @@ class Poll {
         
         return polls
     }
+    
+    func fetchExpirePolls(userId: String) async throws -> [PollModel] {
+        guard let url = URL(string: "\(myurl)/get-exp-polls/\(userId)") else { return [] }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let polls = try JSONDecoder().decode([PollModel].self, from: data)
+        
+        // ⭐ Save to cache
+        savePollsToCache(polls)
+        
+        return polls
+    }
 
     //Post Create Poll
     func createPoll(userId: String, question: String, options: [String], expireAt: Date) async throws -> PollModel {
