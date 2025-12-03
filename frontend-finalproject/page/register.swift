@@ -1,7 +1,5 @@
 import SwiftUI
 
-// MARK: - Inline Theme and Styles (self-contained in this file)
-
 struct RegisterView: View {
     @State private var username = ""
     @State private var password = ""

@@ -13,7 +13,7 @@ struct ContentView: View {
                     .environmentObject(authVM)
             }
         }
-        .tint(.indigo) // ใช้สีเดียวกับ Login/Register
+        .tint(.indigo)
         .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
     }
 }

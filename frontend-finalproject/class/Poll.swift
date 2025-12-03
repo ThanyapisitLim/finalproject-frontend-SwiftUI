@@ -10,7 +10,7 @@ import SwiftUI
 
 
 class Poll {
-    let myurl = "http://localhost:8000"
+    let myurl = "https://epagogic-delinda-tissual.ngrok-free.dev"
     static let shared = Poll()
     private init() {}
     

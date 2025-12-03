@@ -6,7 +6,7 @@
 import Foundation
 
 class Vote {
-    let myurl = "http://localhost:8000"
+    let myurl = "https://epagogic-delinda-tissual.ngrok-free.dev"
     static let shared = Vote()
     private init() {}
     
@@ -32,7 +32,7 @@ class Vote {
         let votes: [VoteModel]
     }
 
-    //Vote Req (ใช้ตอนสร้าง)
+    //Vote Req
     struct VoteRequest: Encodable {
         let userId: String
         let pollId: String

@@ -9,7 +9,7 @@ import Foundation
 
 class User {
 
-    let myurl = "http://localhost:8000"
+    let myurl = "https://epagogic-delinda-tissual.ngrok-free.dev"
     static let shared = User()
     private init() {}
         

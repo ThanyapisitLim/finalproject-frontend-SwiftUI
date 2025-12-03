@@ -6,7 +6,7 @@ struct MainLayout: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(UIColor.systemGroupedBackground).ignoresSafeArea() // background เดียวกับ Login/Register
+                Color(UIColor.systemGroupedBackground).ignoresSafeArea()
                 TabView(selection: $selectedTab) {
                     Home()
                         .tabItem {
@@ -29,21 +29,22 @@ struct MainLayout: View {
                         }
                         .tag(3)
                 }
-                .tint(.indigo) // ปุ่ม / tab สีเดียวกับ Login/Register
+                .tint(.indigo)
             }
             .navigationTitle(tabTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
         }
-        .tint(.indigo) // main tint ทั้ง navigationStack
+        .tint(.indigo)
     }
 
     private var tabTitle: String {
         switch selectedTab {
         case 0: return "Home"
         case 1: return "My Polls"
-        case 2: return "Profile"
+        case 2: return "Result"
+        case 3: return "Profile"
         default: return ""
         }
     }

@@ -19,7 +19,7 @@ struct LoginView: View {
                     .ignoresSafeArea()
 
                 VStack(spacing: 25) {
-                    Spacer() // ดัน VStack ลงมาให้กลางจอ
+                    Spacer()
 
                     VStack(spacing: 25) {
                         Text("Welcome👋")
@@ -48,7 +48,6 @@ struct LoginView: View {
                                         .strokeBorder(Color.secondary.opacity(0.2), lineWidth: 1)
                                 )
                         }
-                        .padding(.horizontal, 24)
 
                         if let errorMessage = errorMessage {
                             Text(errorMessage)
@@ -88,7 +87,7 @@ struct LoginView: View {
                     }
                     .padding(.horizontal, 24)
 
-                    Spacer() // ดัน VStack ให้ center ทั้งแนวตั้ง
+                    Spacer()
                 }
             }
             .navigationBarHidden(true)
@@ -117,6 +116,7 @@ struct LoginView: View {
         }
     }
 }
+
 
 #Preview {
     LoginView()
