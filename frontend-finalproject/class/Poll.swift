@@ -61,14 +61,14 @@ class Poll {
         return polls
     }
     
-    func fetchExpirePolls(userId: String) async throws -> [PollModel] {
-        guard let url = URL(string: "\(myurl)/get-exp-polls/\(userId)") else { return [] }
+    func fetchExpirePolls() async throws -> [PollModel] {
+        guard let url = URL(string: "\(myurl)/get-exp-polls") else { return [] }
         
         let (data, _) = try await URLSession.shared.data(from: url)
         let polls = try JSONDecoder().decode([PollModel].self, from: data)
         
         // ⭐ Save to cache
-        savePollsToCache(polls)
+        saveExpiredPollsToCache(polls)
         
         return polls
     }
@@ -115,12 +115,14 @@ class Poll {
         var homeCache = loadHomePollsFromCache()
         homeCache.insert(created, at: 0)
         saveHomePollsToCache(homeCache)
+
         return created
     }
     
     // MARK: - CACHE
     private let pollCacheKey = "cached_polls"
     private let homePollCacheKey = "cached_home_polls"
+    private let expiredPollCacheKey = "cached_expired_polls"
 
     func savePollsToCache(_ polls: [PollModel]) {
         let encoder = JSONEncoder()
@@ -147,6 +149,22 @@ class Poll {
 
     func loadHomePollsFromCache() -> [PollModel] {
         if let data = UserDefaults.standard.data(forKey: homePollCacheKey) {
+            if let decoded = try? JSONDecoder().decode([PollModel].self, from: data) {
+                return decoded
+            }
+        }
+        return []
+    }
+    
+    func saveExpiredPollsToCache(_ polls: [PollModel]) {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(polls) {
+            UserDefaults.standard.set(encoded, forKey: expiredPollCacheKey)
+        }
+    }
+    
+    func loadExpiredPollsFromCache() -> [PollModel] {
+        if let data = UserDefaults.standard.data(forKey: expiredPollCacheKey) {
             if let decoded = try? JSONDecoder().decode([PollModel].self, from: data) {
                 return decoded
             }
@@ -188,7 +206,12 @@ class Poll {
         var homeCached = loadHomePollsFromCache()
         homeCached.removeAll { $0.id == pollId }
         saveHomePollsToCache(homeCached)
+        
+        var expiredCached = loadExpiredPollsFromCache()
+        expiredCached.removeAll { $0.id == pollId }
+        saveExpiredPollsToCache(expiredCached)
 
         return true
     }
 }
+

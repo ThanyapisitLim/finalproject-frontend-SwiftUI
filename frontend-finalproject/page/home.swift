@@ -51,9 +51,7 @@ struct Home: View {
     private func loadPolls() async {
         // 1) โหลด Cache ก่อน → แสดงทันที ไม่ต้องรอ API
         let cached = Poll.shared.loadHomePollsFromCache()
-        if !cached.isEmpty {
-            polls = cached
-        }
+        polls = cached
 
         isLoading = true
 

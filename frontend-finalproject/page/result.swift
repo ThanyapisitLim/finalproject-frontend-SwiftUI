@@ -48,7 +48,7 @@ struct Result: View {
     // MARK: - Data Loading
     private func loadMyPolls() async {
         // 1. โหลด Cache
-        let cached = Poll.shared.loadPollsFromCache()
+        let cached = Poll.shared.loadExpiredPollsFromCache()
         if !cached.isEmpty {
             polls = cached
         }
@@ -57,7 +57,7 @@ struct Result: View {
 
         // 2. โหลด Server
         do {
-            let freshPolls = try await Poll.shared.fetchPollsByUser(userId: userId)
+            let freshPolls = try await Poll.shared.fetchExpirePolls()
             polls = freshPolls
         } catch {
             print("❌ Fetch polls error:", error)
@@ -99,9 +99,6 @@ struct PollRowContainer: View {
             votes: votes,
             isLoading: isLoadingVotes,
             errorMessage: errorMessage,
-            onDelete: {
-                await deletePoll()
-            }
         )
         // ✅ เพิ่ม onTapGesture เพื่อสั่งเปิด Popup
         .onTapGesture {
@@ -132,16 +129,4 @@ struct PollRowContainer: View {
         isLoadingVotes = false
     }
     
-    private func deletePoll() async {
-        do {
-            // เรียก API ลบ
-            _ = try await Poll.shared.deletePoll(pollId: poll.id)
-            // แจ้ง View หลักให้ลบออกจากรายการ
-            await MainActor.run {
-                onRemoveFromList()
-            }
-        } catch {
-            print("Delete failed: \(error)")
-        }
-    }
 }

@@ -6,7 +6,6 @@ struct PollCardView: View {
     let votes: [Vote.VoteModel]
     let isLoading: Bool
     let errorMessage: String?
-    let onDelete: () async -> Void
     
     @State private var isDeleting = false
     @State private var showConfirmDelete = false
