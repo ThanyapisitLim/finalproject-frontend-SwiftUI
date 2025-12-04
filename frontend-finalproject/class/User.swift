@@ -135,7 +135,7 @@ class User {
         
     }
     
-    //Cache -Tagter-
+    //Key for encoded current user data
     private let currentUserKey = "User.current"
     private func saveCurrentUser(_ user: UserModel) {
         do {
@@ -146,6 +146,7 @@ class User {
         }
     }
 
+    //Fetch current user data
     func currentUser() -> UserModel? {
         guard let data = UserDefaults.standard.data(forKey: currentUserKey) else { return nil }
         do {
@@ -156,6 +157,7 @@ class User {
         }
     }
 
+    //Fetch username
     func currentUsername() -> String? {
         return currentUser()?.username
     }

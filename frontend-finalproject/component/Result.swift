@@ -1,5 +1,4 @@
 import SwiftUI
-//-Tagter-
 struct PollCardView: View {
     // รับค่าเข้ามาจากภายนอก
     let poll: Poll.PollModel
@@ -19,15 +18,17 @@ struct PollCardView: View {
                 optionsCount: poll.options.count
             )
             
-            // Content
+            // หน้าโหลด
             if isLoading {
                 ProgressView("Loading votes…")
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical)
+            // error
             } else if let errorMessage {
                 Text(errorMessage)
                     .foregroundColor(.red)
                     .frame(maxWidth: .infinity, alignment: .leading)
+            // โชว์กราฟ
             } else {
                 Top3BarChartView(
                     options: poll.options,

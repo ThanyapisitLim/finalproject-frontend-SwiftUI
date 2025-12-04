@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
-//-Tagter-
+//Cardอันดับ
 struct ResultPopup: View {
     @Environment(\.dismiss) private var dismiss
     
+    // รับค่าจากหน้าหลัก
     let poll: Poll.PollModel
     @State private var votes: [Vote.VoteModel] = []
     @State private var isLoading = true
@@ -23,19 +24,22 @@ struct ResultPopup: View {
                 BackgroundView()
 
                 CardContainer(isDeleting: $isDeleting, showConfirmDelete: $showConfirmDelete, deleteAction: { }) {
+                    //Header แสดง icon + question
                     SummaryHeaderView(
                         imageName: "chart.bar.fill",
                         question: poll.question,
                         optionsCount: poll.options.count
                     )
-
+                    // โหลดผลโหวต
                     if isLoading {
                         ProgressView("Loading votes…")
                             .frame(maxWidth: .infinity, alignment: .center)
+                    // error message
                     } else if let errorMessage {
                         Text(errorMessage)
                             .foregroundColor(.red)
                             .frame(maxWidth: .infinity, alignment: .leading)
+                    // แสดง Top3 bar chart
                     } else {
                         ResultsListView(
                             options: poll.options,
@@ -43,7 +47,7 @@ struct ResultPopup: View {
                             total: votes.count
                         )
                     }
-
+                    
                     if let expireText = formattedExpireText() {
                         Text(expireText)
                             .font(.footnote)
@@ -73,7 +77,6 @@ struct ResultPopup: View {
         .presentationDetents([.large])
     }
 
-    //Date Helpers
     private static let isoFormatter: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
         f.formatOptions = [
@@ -92,6 +95,7 @@ struct ResultPopup: View {
         return f
     }()
 
+    //แปลงค่าเวลา
     private func formattedExpireText() -> String? {
         if let date = Self.isoFormatter.date(from: poll.expireAt) {
             return "Ends \(Self.displayDateFormatter.string(from: date))"
@@ -106,7 +110,7 @@ struct ResultPopup: View {
         }
     }
 
-    //Data
+    //ดึงข้อมูล
     private func loadVotes() async {
         isLoading = true
         errorMessage = nil
@@ -118,6 +122,7 @@ struct ResultPopup: View {
         isLoading = false
     }
 
+    //นับจำนวนโหวตของแต่ละตัวเลือก
     private func countsByOption() -> [String: Int] {
         var dict: [String: Int] = [:]
         for opt in poll.options {
@@ -218,7 +223,7 @@ private struct ResultsListView: View {
                     }
 
                     GeometryReader { geo in
-                        // Deduct inner paddings if any; here we keep a small inset to match visuals
+                       
                         let available = geo.size.width
                         let barWidth = max(0, CGFloat(percent) * available)
 
@@ -233,7 +238,7 @@ private struct ResultsListView: View {
                                 .animation(.easeInOut(duration: 0.25), value: percent)
                         }
                     }
-                    .frame(height: 10) // Fix height; GeometryReader will expand vertically otherwise
+                    .frame(height: 10)
                 }
                 .padding(.vertical, 6)
             }

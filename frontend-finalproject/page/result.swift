@@ -100,17 +100,14 @@ struct PollRowContainer: View {
             isLoading: isLoadingVotes,
             errorMessage: errorMessage,
         )
-        // ✅ เพิ่ม onTapGesture เพื่อสั่งเปิด Popup
+        // เพิ่ม onTapGesture เพื่อสั่งเปิด Popup
         .onTapGesture {
             showPopup = true
         }
-        // ✅ เพิ่ม .sheet หรือ .fullScreenCover เพื่อแสดงหน้า PollPopup
+        // เพิ่ม .sheet เพื่อแสดงหน้า PollPopup
         .sheet(isPresented: $showPopup) {
-            // ส่งข้อมูล poll ไปยังหน้า Popup (คุณอาจต้องปรับ parameter ให้ตรงกับไฟล์ PollPopup ของคุณ)
+            // ส่งข้อมูล poll ไปยังหน้า Popup
             ResultPopup(poll: poll)
-            
-            // หมายเหตุ: ถ้า PollPopup ต้องการ votes ด้วย ให้ส่งไปแบบนี้:
-            // PollPopup(poll: poll, preloadedVotes: votes)
         }
         .task {
             await loadVotes()

@@ -5,11 +5,11 @@ struct Profile: View {
     @State private var votes: [Vote.VoteModel] = []
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?
-
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-
+                
                 // HEADER AREA
                 VStack(spacing: 12) {
                     // Avatar
@@ -28,13 +28,13 @@ struct Profile: View {
                                 .foregroundColor(.white)
                         )
                         .shadow(color: .purple.opacity(0.3), radius: 10, x: 0, y: 6)
-
+                    
                     Text(User.shared.currentUsername() ?? "Guest")
                         .font(.system(size: 26, weight: .semibold))
                         .foregroundColor(.primary)
                 }
                 .padding(.top, 40)
-
+                
                 // VOTES SECTION
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
@@ -45,13 +45,9 @@ struct Profile: View {
                             ProgressView()
                         }
                     }
-
-                    if let errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .font(.subheadline)
-                            .padding(.vertical, 4)
-                    } else if !isLoggedIn {
+                    
+                    
+                    if !isLoggedIn {
                         Text("Please log in to see your votes.")
                             .foregroundStyle(.secondary)
                     } else if votes.isEmpty && !isLoading {
@@ -76,12 +72,9 @@ struct Profile: View {
                         .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 4)
                 )
                 .padding(.horizontal)
-
+                
                 // LOGOUT BUTTON
                 Button(action: {
-                    if let uid = User.shared.currentUser()?.id {
-                        Vote.shared.clearVotesCache(userId: uid)
-                    }
                     authVM.logout()
                     votes = []
                     errorMessage = nil
@@ -116,17 +109,17 @@ struct Profile: View {
             await loadVotes()
         }
     }
-
+    
     private var isLoggedIn: Bool {
         authVM.isLoggedIn && (User.shared.currentUser() != nil)
     }
-
+    
     // Generate initials like "T"
     func initials(_ username: String?) -> String {
         guard let name = username, !name.isEmpty else { return "?" }
         return String(name.prefix(1)).uppercased()
     }
-
+    
     // Load votes for current user
     private func loadVotes(force: Bool = false) async {
         guard let userId = User.shared.currentUser()?.id else {
@@ -134,27 +127,19 @@ struct Profile: View {
             print("No current user id")
             return
         }
+        
         if isLoading && !force { return }
         isLoading = true
         errorMessage = nil
         defer { isLoading = false }
-
-        // 1) Load from cache
-        let cached = Vote.shared.loadVotesFromCache(userId: userId)
-        if !cached.isEmpty {
-            votes = cached
-            // 2) Skip network fetch entirely if we already have cache
-            return
-        }
-
-        // 3) Otherwise fetch once and cache
+        
+        // ถ้า force หรือไม่มี cache → ดึงจาก server
         do {
             let fetched = try await Vote.shared.fetchVoteByUserId(userId: userId)
             votes = fetched
-            Vote.shared.saveVotesToCache(fetched, userId: userId)
+            
         } catch {
             errorMessage = error.localizedDescription
-            votes = []
             print("Fetch votes error:", error)
         }
     }

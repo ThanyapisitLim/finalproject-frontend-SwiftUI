@@ -61,6 +61,7 @@ class Poll {
         return polls
     }
     
+    //Fetch Expired Poll
     func fetchExpirePolls() async throws -> [PollModel] {
         guard let url = URL(string: "\(myurl)/get-exp-polls") else { return [] }
         
@@ -120,10 +121,14 @@ class Poll {
     }
     
     //Cache -Tagter-
+    
+    // Key for encoded
     private let pollCacheKey = "cached_polls"
     private let homePollCacheKey = "cached_home_polls"
     private let expiredPollCacheKey = "cached_expired_polls"
 
+    
+    //Save user poll to Cache
     func savePollsToCache(_ polls: [PollModel]) {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(polls) {
@@ -131,6 +136,7 @@ class Poll {
         }
     }
 
+    //Fetch user poll from Cache
     func loadPollsFromCache() -> [PollModel] {
         if let data = UserDefaults.standard.data(forKey: pollCacheKey) {
             if let decoded = try? JSONDecoder().decode([PollModel].self, from: data) {
@@ -140,13 +146,15 @@ class Poll {
         return []
     }
     
+    //Save all poll to Cache
     func saveHomePollsToCache(_ polls: [PollModel]) {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(polls) {
             UserDefaults.standard.set(encoded, forKey: homePollCacheKey)
         }
     }
-
+    
+    //fetch all poll from Cache
     func loadHomePollsFromCache() -> [PollModel] {
         if let data = UserDefaults.standard.data(forKey: homePollCacheKey) {
             if let decoded = try? JSONDecoder().decode([PollModel].self, from: data) {
@@ -156,6 +164,7 @@ class Poll {
         return []
     }
     
+    //save all expired poll to Cache
     func saveExpiredPollsToCache(_ polls: [PollModel]) {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(polls) {
@@ -163,6 +172,7 @@ class Poll {
         }
     }
     
+    //save all expired poll to Cache
     func loadExpiredPollsFromCache() -> [PollModel] {
         if let data = UserDefaults.standard.data(forKey: expiredPollCacheKey) {
             if let decoded = try? JSONDecoder().decode([PollModel].self, from: data) {
@@ -172,6 +182,7 @@ class Poll {
         return []
     }
     
+    //Delete Poll
     func deletePoll(pollId: String) async throws -> Bool {
         guard let url = URL(string: "\(myurl)/delete-poll") else {
             throw URLError(.badURL)
@@ -198,7 +209,7 @@ class Poll {
             )
         }
 
-        // ลบออกจาก cache ด้วย
+        // ลบออกจาก cache
         var cached = loadPollsFromCache()
         cached.removeAll { $0.id == pollId }
         savePollsToCache(cached)

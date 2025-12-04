@@ -5,7 +5,6 @@
 //  Created by Thanyapisit on 16/11/2568 BE.
 //
 import SwiftUI
-//-Tagter-
 struct VoteRowView: View {
     let vote: Vote.VoteModel
 

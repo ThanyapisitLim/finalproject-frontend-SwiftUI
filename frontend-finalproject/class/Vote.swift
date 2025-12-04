@@ -83,11 +83,12 @@ class Vote {
         }
     }
     
-    //Cache -Tagter-
+    //create cachekey by userid
     private func cacheKey(for userId: String) -> String {
         "votes_cache_\(userId)"
     }
     
+    //save votes from cache
     func saveVotesToCache(_ votes: [VoteModel], userId: String) {
         do {
             let data = try JSONEncoder().encode(votes)
@@ -96,21 +97,4 @@ class Vote {
             print("Failed to encode votes for cache:", error)
         }
     }
-    
-    func loadVotesFromCache(userId: String) -> [VoteModel] {
-        guard let data = UserDefaults.standard.data(forKey: cacheKey(for: userId)) else { return [] }
-        do {
-            // decoder without date strategy works because VoteModel is Encodable/Decodable symmetric here
-            let votes = try JSONDecoder().decode([VoteModel].self, from: data)
-            return votes
-        } catch {
-            print("Failed to decode cached votes:", error)
-            return []
-        }
-    }
-    
-    func clearVotesCache(userId: String) {
-        UserDefaults.standard.removeObject(forKey: cacheKey(for: userId))
-    }
-    
 }

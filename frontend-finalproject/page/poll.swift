@@ -67,15 +67,8 @@ struct PollView: View {
     }
 
     private func loadMyPolls() async {
-        // 1) โหลด Cache ก่อน → แสดงทันที ไม่ต้องรอ API
-        let cached = Poll.shared.loadPollsFromCache()
-        if !cached.isEmpty {
-            polls = cached
-        }
-
         isLoading = true
-
-        // 2) โหลดข้อมูลจริงจาก server
+        //โหลดข้อมูลจริงจาก server
         do {
             let freshPolls = try await Poll.shared.fetchPollsByUser(userId: userId)
             polls = freshPolls // อัปเดต UI
