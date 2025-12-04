@@ -20,7 +20,7 @@ struct MainLayout: View {
                         .tag(1)
                     Result()
                         .tabItem {
-                            Label("Result", systemImage: selectedTab == 2 ? "person.crop.circle.fill" : "person.crop.circle")
+                            Label("Result", systemImage: selectedTab == 2 ? "folder.circle.fill" : "folder.circle")
                         }
                         .tag(2)
                     Profile()
