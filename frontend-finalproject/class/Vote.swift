@@ -82,19 +82,4 @@ class Vote {
             throw NSError(domain: "APIService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: "Vote failed (\(http.statusCode)): \(body)"])
         }
     }
-    
-    //create cachekey by userid
-    private func cacheKey(for userId: String) -> String {
-        "votes_cache_\(userId)"
-    }
-    
-    //save votes from cache
-    func saveVotesToCache(_ votes: [VoteModel], userId: String) {
-        do {
-            let data = try JSONEncoder().encode(votes)
-            UserDefaults.standard.set(data, forKey: cacheKey(for: userId))
-        } catch {
-            print("Failed to encode votes for cache:", error)
-        }
-    }
 }
