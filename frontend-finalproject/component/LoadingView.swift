@@ -5,6 +5,7 @@
 
 import SwiftUI
 
+//Error
 struct LoadingView: View {
     @State private var appear = false
 

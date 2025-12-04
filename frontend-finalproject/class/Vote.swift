@@ -6,12 +6,13 @@
 import Foundation
 
 class Vote {
+    
     let myurl = "https://epagogic-delinda-tissual.ngrok-free.dev"
     static let shared = Vote()
     private init() {}
     
     //Vote Model (ใช้ตอน Fetch)
-    struct VoteModel: Decodable, Encodable { // make Encodable for caching
+    struct VoteModel: Decodable, Encodable {
         let id: String
         let userId: String
         let pollId: String
@@ -19,7 +20,7 @@ class Vote {
         let timestamp: Date
         let previousHash: String?
         let currentHash: String
-        let question: String? // added to match new API response
+        let question: String?
         
         enum CodingKeys: String, CodingKey {
             case id = "_id"
@@ -27,7 +28,7 @@ class Vote {
         }
     }
     
-    // Top-level response wrapper for /get-votes-by-user
+    // Top-level response wrapper for /get-votes-by-user -Tagter-
     private struct VotesResponse: Decodable {
         let votes: [VoteModel]
     }
@@ -50,6 +51,18 @@ class Vote {
         return (try? decoder.decode([VoteModel].self, from: data)) ?? []
     }
     
+    //Fetch Vote by User
+    func fetchVoteByUserId(userId: String) async throws -> [VoteModel] {
+        guard let url = URL(string: "\(myurl)/get-votes-by-user/\(userId)") else { return [] }
+        let (data, _) = try await URLSession.shared.data(from: url)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        let wrapped = try decoder.decode(VotesResponse.self, from: data)
+        return wrapped.votes
+    }
+    
     //Vote Poll
     func vote(userId: String, pollId: String, selectedOption: String) async throws -> Void {
         guard let url = URL(string: "\(myurl)/vote") else {
@@ -70,18 +83,7 @@ class Vote {
         }
     }
     
-    func fetchVoteByUserId(userId: String) async throws -> [VoteModel] {
-        guard let url = URL(string: "\(myurl)/get-votes-by-user/\(userId)") else { return [] }
-        let (data, _) = try await URLSession.shared.data(from: url)
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        let wrapped = try decoder.decode(VotesResponse.self, from: data)
-        return wrapped.votes
-    }
-    
-    // MARK: - CACHE (per user)
+    //Cache -Tagter-
     private func cacheKey(for userId: String) -> String {
         "votes_cache_\(userId)"
     }

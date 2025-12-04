@@ -1,5 +1,5 @@
 import SwiftUI
-
+//-Tagter-
 struct PollCardView: View {
     // รับค่าเข้ามาจากภายนอก
     let poll: Poll.PollModel

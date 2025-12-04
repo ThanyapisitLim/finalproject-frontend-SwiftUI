@@ -13,10 +13,12 @@ class AuthViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var currentUser: User.UserModel? = nil
 
+    //Check
     init() {
         checkLoginStatus()
     }
 
+    //Login
     func login(username: String, password: String) async {
         do {
             if let user = try await User.shared.loginUser(username: username, password: password) {
@@ -34,12 +36,14 @@ class AuthViewModel: ObservableObject {
         }
     }
 
+    //Logout
     func logout() {
         currentUser = nil
         isLoggedIn = false
         UserDefaults.standard.set(false, forKey: "isLoggedIn")
     }
 
+    //Check Login
     func checkLoginStatus() {
         isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
     }

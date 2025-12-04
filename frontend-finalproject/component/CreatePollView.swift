@@ -11,9 +11,7 @@ struct CreatePollView: View {
     //Var
     let userId: String
     var onCreated: (Poll.PollModel) -> Void
-
     @Environment(\.dismiss) private var dismiss
-
     @State private var question: String = ""
     @State private var options: [String] = ["", ""]
     @State private var expireDate: Date = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
@@ -28,7 +26,6 @@ struct CreatePollView: View {
                     TextField("Enter your question", text: $question)
                         .textInputAutocapitalization(.sentences)
                 }
-                
                 //Dynamic Choices
                 Section(header: Text("Choices")) {
                     ForEach(options.indices, id: \.self) { index in

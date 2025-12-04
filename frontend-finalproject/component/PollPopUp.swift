@@ -9,7 +9,6 @@ import SwiftUI
 
 struct PollPopup: View {
     @Environment(\.dismiss) private var dismiss
-    
     let poll: Poll.PollModel
     @State private var votes: [Vote.VoteModel] = []
     @State private var isLoading = true
@@ -74,6 +73,7 @@ struct PollPopup: View {
     }
 
     //Date Helpers
+    //Format
     private static let isoFormatter: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
         f.formatOptions = [
@@ -83,8 +83,8 @@ struct PollPopup: View {
         f.timeZone = TimeZone(secondsFromGMT: 0)
         return f
     }()
-
-
+    
+    //View
     private static let displayDateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateStyle = .medium
@@ -248,7 +248,6 @@ private struct ResultsListView: View {
                     }
 
                     GeometryReader { geo in
-                        // Deduct inner paddings if any; here we keep a small inset to match visuals
                         let available = geo.size.width
                         let barWidth = max(0, CGFloat(percent) * available)
 
@@ -263,7 +262,7 @@ private struct ResultsListView: View {
                                 .animation(.easeInOut(duration: 0.25), value: percent)
                         }
                     }
-                    .frame(height: 10) // Fix height; GeometryReader will expand vertically otherwise
+                    .frame(height: 10)
                 }
                 .padding(.vertical, 6)
             }

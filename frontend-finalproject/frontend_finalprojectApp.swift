@@ -13,7 +13,7 @@ struct Frontend_finalprojectApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Guard()
                 .environmentObject(authVM)
                 .onAppear {
                     authVM.checkLoginStatus()   // ⭐ โหลดค่า login ตอนเปิดแอป

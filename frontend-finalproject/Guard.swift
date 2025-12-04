@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ContentView: View {
+struct Guard: View {
     @EnvironmentObject var authVM: AuthViewModel
 
     var body: some View {

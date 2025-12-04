@@ -2,7 +2,6 @@ import SwiftUI
 
 struct Profile: View {
     @EnvironmentObject var authVM: AuthViewModel
-
     @State private var votes: [Vote.VoteModel] = []
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?

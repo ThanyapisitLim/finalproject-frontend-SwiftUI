@@ -87,9 +87,8 @@ class User {
         saveCurrentUser(created)
         return created
     }
-
-
     
+    //Post Login
     func loginUser(username: String, password: String) async throws -> UserModel? {
         guard let url = URL(string: "\(myurl)/login") else { return nil }
 
@@ -136,9 +135,8 @@ class User {
         
     }
     
+    //Cache -Tagter-
     private let currentUserKey = "User.current"
-
-    // MARK: - Cache Helpers
     private func saveCurrentUser(_ user: UserModel) {
         do {
             let data = try JSONEncoder().encode(user)

@@ -55,7 +55,7 @@ class Poll {
         let (data, _) = try await URLSession.shared.data(from: url)
         let polls = try JSONDecoder().decode([PollModel].self, from: data)
         
-        // ⭐ Save to cache
+        //Save to cache
         savePollsToCache(polls)
         
         return polls
@@ -67,7 +67,7 @@ class Poll {
         let (data, _) = try await URLSession.shared.data(from: url)
         let polls = try JSONDecoder().decode([PollModel].self, from: data)
         
-        // ⭐ Save to cache
+        //Save to cache
         saveExpiredPollsToCache(polls)
         
         return polls
@@ -103,15 +103,15 @@ class Poll {
             throw NSError(domain: "APIService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: "Create poll failed (\(http.statusCode)): \(body)"])
         }
 
-        // Decode poll ที่สร้างสำเร็จ
+        //Decode poll ที่สร้างสำเร็จ
         let created = try JSONDecoder().decode(PollModel.self, from: data)
 
-        // ⭐ เพิ่มเข้าค้า Cache ของหน้า MyPoll
+        //เพิ่มเข้าค้า Cache ของหน้า MyPoll
         var userCache = loadPollsFromCache()
         userCache.insert(created, at: 0)
         savePollsToCache(userCache)
 
-        // ⭐ เพิ่มเข้าค้า Cache ของหน้า Home
+        //เพิ่มเข้าค้า Cache ของหน้า Home
         var homeCache = loadHomePollsFromCache()
         homeCache.insert(created, at: 0)
         saveHomePollsToCache(homeCache)
@@ -119,7 +119,7 @@ class Poll {
         return created
     }
     
-    // MARK: - CACHE
+    //Cache -Tagter-
     private let pollCacheKey = "cached_polls"
     private let homePollCacheKey = "cached_home_polls"
     private let expiredPollCacheKey = "cached_expired_polls"

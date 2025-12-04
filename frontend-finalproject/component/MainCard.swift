@@ -10,8 +10,7 @@ import SwiftUI
 struct MainCard: View {
     var imageName: String
     var poll: Poll.PollModel
-
-    // ใช้ PollModel สำหรับการเลือกแทน Poll (ซึ่งเป็น View)
+    //View ลูก
     @Binding var selectedPoll: Poll.PollModel?
 
     var body: some View {
@@ -50,7 +49,6 @@ struct MainCard: View {
                 .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
         )
         .padding(.horizontal)
-        // 🖱️ Tap gesture เพื่อเลือก poll
         .onTapGesture {
             selectedPoll = poll
         }

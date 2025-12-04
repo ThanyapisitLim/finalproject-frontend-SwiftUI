@@ -8,8 +8,6 @@ struct PollView: View {
     @State private var showCreatePoll = false
     @State private var hasLoadedOnce = false
     
-    
-
     var body: some View {
         NavigationStack {
             ZStack {
