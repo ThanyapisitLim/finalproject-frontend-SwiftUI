@@ -11,13 +11,14 @@ struct PollView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // ScrollView สำหรับ MainCard
                 ScrollView {
                     VStack(spacing: 16) {
+                        
                         if isLoading {
                             ProgressView("Loading…")
                                 .padding(.top, 40)
                         }
+                        
                         ForEach(polls) { poll in
                             MainCard(
                                 imageName: "chart.bar.fill",
@@ -25,22 +26,31 @@ struct PollView: View {
                                 selectedPoll: $selectedPoll
                             )
                         }
+                        
                         if !isLoading && polls.isEmpty {
                             VStack(spacing: 8) {
                                 Image(systemName: "tray")
                                     .font(.system(size: 36))
                                     .foregroundColor(.secondary)
+                                
                                 Text("No polls yet")
                                     .foregroundColor(.secondary)
+                                
                                 Text("Tap + to create your first poll.")
                                     .font(.footnote)
                                     .foregroundColor(.secondary)
                             }
                             .padding(.top, 40)
                         }
+                        
                     }
                     .padding(.top)
                 }
+                .refreshable {
+                    await loadMyPolls()
+                }
+                
+                // ปุ่ม Create Poll
                 CreatePollButton {
                     showCreatePoll = true
                 }
@@ -60,17 +70,15 @@ struct PollView: View {
                     Task { await loadMyPolls() }
                 }
             }
-            .refreshable {
-                await loadMyPolls()
-            }
         }
     }
-
+    
     private func loadMyPolls() async {
+        let cached = Poll.shared.loadPollsFromCache()
+        polls = cached
         isLoading = true
-        //โหลดข้อมูลจริงจาก server
         do {
-            let freshPolls = try await Poll.shared.fetchPollsByUser(userId: userId)
+            let freshPolls = try await Poll.shared.fetchPollsByUser(userId:userId)
             polls = freshPolls // อัปเดต UI
         } catch {
             print("❌ Fetch error:", error)
@@ -79,4 +87,3 @@ struct PollView: View {
         isLoading = false
     }
 }
-
