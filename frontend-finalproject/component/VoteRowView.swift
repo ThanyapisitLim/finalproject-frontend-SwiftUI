@@ -8,7 +8,7 @@ import SwiftUI
 struct VoteRowView: View {
     let vote: Vote.VoteModel
 
-    private static let displayFormatter: DateFormatter = {
+    let displayFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateStyle = .medium
         f.timeStyle = .short
@@ -35,7 +35,7 @@ struct VoteRowView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
 
-                Text(Self.displayFormatter.string(from: vote.timestamp))
+                Text(displayFormatter.string(from: vote.timestamp))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
