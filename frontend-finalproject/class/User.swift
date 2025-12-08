@@ -25,12 +25,12 @@ class User {
             case password
         }
     }
+    
     //User Req (ใช้ตอนสร้าง)
     struct UserRequest: Encodable {
         let username: String
         let password: String
     }
-    
     struct CreateUserResponse: Codable {
         let userId: String
     }
